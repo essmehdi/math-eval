@@ -1,4 +1,4 @@
-use crate::tokenizer::Token;
+use crate::{tokenizer::Token, utils::exit_with_error};
 
 #[derive(Debug)]
 pub struct OperationTree {
@@ -67,7 +67,8 @@ pub fn parse_term(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
                     match next_token {
                         Token::Separator => {
                             if get_function_params_number(func) != 2 {
-                                panic!("Expected closing parenthesis, found {:?}", next_token);
+                                exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                                unreachable!()
                             }
                             let (next_tree, new_i) = parse_expression(tokens, new_i + 1);
                             let next_token = tokens.get(new_i).unwrap();
@@ -81,7 +82,8 @@ pub fn parse_term(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
                                     (tree, new_i + 1)
                                 },
                                 _ => {
-                                    panic!("Expected closing parenthesis, found {:?}", next_token);
+                                    exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                                    unreachable!()
                                 }
                             }
                         },
@@ -94,12 +96,14 @@ pub fn parse_term(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
                             (tree, new_i + 1)
                         },
                         _ => {
-                            panic!("Expected closing parenthesis, found {:?}", next_token);
+                            exit_with_error(format!("Expected separator or closing parenthesis, found {:?}", next_token));
+                            unreachable!()
                         }
                     }
                 },
                 _ => {
-                    panic!("Expected opening parenthesis, found {:?}", next_token);
+                    exit_with_error(format!("Expected opening parenthesis, found {:?}", next_token));
+                    unreachable!()
                 }
             }
         },
@@ -111,12 +115,14 @@ pub fn parse_term(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
                     (tree, new_i + 1)
                 },
                 _ => {
-                    panic!("Expected closing parenthesis, found {:?}", next_token);
+                    exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                    unreachable!()
                 }
             }
         },
         _ => {
-            panic!("Expected number or parenthesis, found {:?}", token);
+            exit_with_error(format!("Expected number, function or opening parenthesis, found {:?}", token));
+            unreachable!()
         }
     }
 }
@@ -125,6 +131,9 @@ fn get_function_params_number(function: &str) -> usize {
     match function {
         "sin" | "cos" | "tan" | "asin" | "acos" | "atan" | "sqrt" => 1,
         "pow" => 2,
-        _ => panic!("Invalid function: {}", function),
+        _ => {
+            exit_with_error(format!("Invalid function: {}", function));
+            unreachable!()
+        },
     }
 }

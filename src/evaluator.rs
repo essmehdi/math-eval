@@ -1,5 +1,6 @@
 use crate::parser::OperationTree;
 use crate::tokenizer::Token;
+use crate::utils::exit_with_error;
 
 pub fn evaluate_tree(tree: &OperationTree) -> f64 {
     match &tree.val {
@@ -12,7 +13,10 @@ pub fn evaluate_tree(tree: &OperationTree) -> f64 {
                 '-' => left - right,
                 '*' => left * right,
                 '/' => left / right,
-                _ => panic!("Invalid operator: {}", op),
+                _ => {
+                    exit_with_error(format!("Invalid operator: {}", op));
+                    unreachable!()
+                },
             }
         },
         Token::Function(function) => {
@@ -29,11 +33,15 @@ pub fn evaluate_tree(tree: &OperationTree) -> f64 {
                     let exponent = evaluate_tree(tree.right.as_ref().unwrap());
                     operand.powf(exponent)
                 },
-                _ => panic!("Invalid function: {}", function),
+                _ => {
+                    exit_with_error(format!("Invalid function: {}", function));
+                    unreachable!()
+                }
             }
         },
         _ => {
-            panic!("Invalid tree node: {:?}", tree);
+            exit_with_error(format!("Invalid token: {:?}", tree.val));
+            unreachable!()
         }
     }
 }
