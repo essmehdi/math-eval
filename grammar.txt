@@ -1,0 +1,7 @@
+-- Grammar:
+exp -> operand + exp | operand - exp | operand
+operand -> term * operand | term / operand | term
+term -> NUM | FUNC ( expr ) | ( expr )
+
+-- Tokens:
+FUNC, (, ), NUM, +, -, /, *
