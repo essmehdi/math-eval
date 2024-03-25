@@ -1,5 +1,5 @@
 -- Grammar:
-exp -> operand + exp | operand - exp | operand
+expr -> operand + expr | operand - expr | operand
 operand -> term * operand | term / operand | term
 term -> NUM | FUNC ( expr ) | ( expr )
 
