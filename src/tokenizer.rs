@@ -1,4 +1,4 @@
-use std::{fmt::Display};
+use std::fmt::Display;
 
 use crate::utils::exit_with_error;
 
@@ -55,7 +55,7 @@ pub fn tokenize_expression(exp: &str) -> Vec<Token> {
             tokens.push(Token::Function(function));
             i = new_i;
         } else {
-            exit_with_error(format!("Invalid character: {} at position {}", current, i+1));
+            exit_with_error(format!("Invalid character: {}", current));
         }
     }
 
@@ -96,7 +96,7 @@ fn tokenize_function(exp: &str, i: usize) -> (String, usize) {
     }
 
     if !FUNCTIONS.contains(&function.as_str()) {
-        exit_with_error(format!("Invalid function: {} at position {}", function, i+1));
+        exit_with_error(format!("Invalid function: {}", function));
     }
 
     (function, i)
