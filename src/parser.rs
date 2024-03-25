@@ -48,80 +48,80 @@ pub fn parse_operand(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
 }
 
 pub fn parse_term(tokens: &Vec<Token>, i: usize) -> (OperationTree, usize) {
-    let token = tokens.get(i).unwrap();
+    let token = tokens.get(i);
     match token {
-        Token::Number(_) => {
+        Some(Token::Number(_)) => {
             let tree = OperationTree {
-                val: token.clone(),
+                val: token.unwrap().clone(),
                 left: None,
                 right: None,
             };
             (tree, i + 1)
         },
-        Token::Function(func) => {
+        Some(Token::Function(func)) => {
             let next_token = tokens.get(i + 1);
             match next_token {
                 Some(Token::Parenthesis('(')) => {
                     let (tree, new_i) = parse_expression(tokens, i + 2);
-                    let next_token = tokens.get(new_i).unwrap();
+                    let next_token = tokens.get(new_i);
                     match next_token {
-                        Token::Separator => {
+                        Some(Token::Separator) => {
                             if get_function_params_number(func) != 2 {
-                                exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                                exit_with_error(format!("Expected closing parenthesis, found {}", next_token.unwrap()));
                                 unreachable!()
                             }
                             let (next_tree, new_i) = parse_expression(tokens, new_i + 1);
-                            let next_token = tokens.get(new_i).unwrap();
+                            let next_token = tokens.get(new_i);
                             match next_token {
-                                Token::Parenthesis(')') => {
+                                Some(Token::Parenthesis(')')) => {
                                     let tree = OperationTree {
-                                        val: token.clone(),
+                                        val: token.unwrap().clone(),
                                         left: Some(Box::new(tree)),
                                         right: Some(Box::new(next_tree)),
                                     };
                                     (tree, new_i + 1)
                                 },
                                 _ => {
-                                    exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                                    exit_with_error(format!("Expected closing parenthesis, found {}", next_token.unwrap_or(&Token::EOF)));
                                     unreachable!()
                                 }
                             }
                         },
-                        Token::Parenthesis(')') => {
+                        Some(Token::Parenthesis(')')) => {
                             let tree = OperationTree {
-                                val: token.clone(),
+                                val: token.unwrap().clone(),
                                 left: Some(Box::new(tree)),
                                 right: None,
                             };
                             (tree, new_i + 1)
                         },
                         _ => {
-                            exit_with_error(format!("Expected separator or closing parenthesis, found {:?}", next_token));
+                            exit_with_error(format!("Expected separator or closing parenthesis, found {}", next_token.unwrap_or(&Token::EOF)));
                             unreachable!()
                         }
                     }
                 },
                 _ => {
-                    exit_with_error(format!("Expected opening parenthesis, found {:?}", next_token));
+                    exit_with_error(format!("Expected opening parenthesis, found {}", next_token.unwrap_or(&Token::EOF)));
                     unreachable!()
                 }
             }
         },
-        Token::Parenthesis('(') => {
+        Some(Token::Parenthesis('(')) => {
             let (tree, new_i) = parse_expression(tokens, i + 1);
-            let next_token = tokens.get(new_i).unwrap();
+            let next_token = tokens.get(new_i);
             match next_token {
-                Token::Parenthesis(')') => {
+                Some(Token::Parenthesis(')')) => {
                     (tree, new_i + 1)
                 },
                 _ => {
-                    exit_with_error(format!("Expected closing parenthesis, found {:?}", next_token));
+                    exit_with_error(format!("Expected closing parenthesis, found {}", next_token.unwrap_or(&Token::EOF)));
                     unreachable!()
                 }
             }
         },
         _ => {
-            exit_with_error(format!("Expected number, function or opening parenthesis, found {:?}", token));
+            exit_with_error(format!("Expected number, function or opening parenthesis, found {}", token.unwrap_or(&Token::EOF)));
             unreachable!()
         }
     }

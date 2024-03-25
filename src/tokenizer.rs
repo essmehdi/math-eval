@@ -1,3 +1,5 @@
+use std::{fmt::Display};
+
 use crate::utils::exit_with_error;
 
 #[derive(Debug, Clone)]
@@ -7,6 +9,21 @@ pub enum Token {
     Parenthesis(char),
     Function(String),
     Separator,
+    EOF
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Token::Number(n) => write!(f, "{}", n),
+            Token::Operator(op) => write!(f, "{}", op),
+            Token::Parenthesis(p) => write!(f, "{}", p),
+            Token::Function(func) => write!(f, "{}", func),
+            Token::Separator => write!(f, ","),
+            Token::EOF => write!(f, "EOF"),
+        }
+    }
+
 }
 
 pub const OPERATORS: [char; 4] = ['+', '-', '*', '/'];
